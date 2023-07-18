@@ -1,0 +1,30 @@
+{
+  "name": "bash-openai",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "generate": "pkg ./dist/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output ./bin/bash-openai-x86"
+  },
+  "dependencies": {
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.3.1",
+    "figlet": "^1.6.0",
+    "marked": "^5.1.1",
+    "marked-terminal": "^5.2.0",
+    "openai": "^3.3.0",
+    "ora": "^6.3.1",
+    "readline-sync": "^1.4.10",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1",
+    "@types/marked": "^5.0.1",
+    "@types/marked-terminal": "^3.1.3",
+    "@types/node": "^20.4.2",
+    "@types/readline-sync": "^1",
+    "pkg": "^5.8.1",
+    "ts-node": "^10.9.1"
+  }
+}
