@@ -3,8 +3,11 @@
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "generate": "pkg ./dist/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output ./bin/bash-openai-x86"
+    "dev": "rollup -c -w",
+    "compile": "tsc",
+    "build:rollup": "rollup -c",
+    "build:pkg": "pkg ./bundle/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output ./bin/bash-openai-x86",
+    "build": "build:rollup && build:pkg"
   },
   "dependencies": {
     "boxen": "^7.1.1",
@@ -15,17 +18,23 @@
     "marked-terminal": "^5.2.0",
     "openai": "^3.3.0",
     "ora": "^6.3.1",
-    "readline-sync": "^1.4.10",
-    "typescript": "^5.1.6"
+    "readline-sync": "^1.4.10"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.2",
     "@types/figlet": "^1",
     "@types/marked": "^5.0.1",
     "@types/marked-terminal": "^3.1.3",
     "@types/node": "^20.4.2",
     "@types/readline-sync": "^1",
     "pkg": "^5.8.1",
-    "ts-node": "^10.9.1"
+    "rollup": "^3.26.3",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.6.0",
+    "typescript": "^5.1.6"
   },
   "pkg": {
     "assets": [

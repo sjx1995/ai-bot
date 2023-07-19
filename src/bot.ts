@@ -25,7 +25,7 @@ const requestOpenAI = async (message: string) => {
 
   createOenAI();
   const chatCompletion = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
+    model: process.env["OPEN_AI_MODEL"] as string,
     messages: getMessages(),
   });
   const answer = chatCompletion.data.choices[0].message?.content!;

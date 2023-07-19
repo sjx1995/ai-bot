@@ -14,6 +14,7 @@ dist-ssr
 .yarn/*
 .preset
 bin
+bundle
 
 # Editor directories and files
 .vscode/*
