@@ -1,13 +1,15 @@
 {
   "name": "ai-bot",
+  "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "dev": "rollup -c -w",
     "compile": "tsc",
     "build:rollup": "rollup -c",
-    "build:pkg": "pkg ./bundle/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output ./bin/bash-openai-x86",
-    "build": "build:rollup && build:pkg"
+    "build:pkg": "pkg ./bundle/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64,node18-macos-arm64 --output ./bin/ai-bot-x86",
+    "build": "yarn build:rollup && yarn build:pkg",
+    "build:version": "node ./gen-version.js"
   },
   "dependencies": {
     "boxen": "^7.1.1",
@@ -25,6 +27,7 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-typescript": "^11.1.2",
+    "@sunly95/gen-version": "^2.1.0",
     "@types/figlet": "^1",
     "@types/marked": "^5.0.1",
     "@types/marked-terminal": "^3.1.3",

@@ -1,0 +1,82 @@
+name: Build and Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build project
+        run: yarn run build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: ./bin
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts
+          path: ./bin
+
+      - name: Get latest commit message
+        id: commit
+        run: |
+          echo "::set-output name=message::$(git log --format=%B -n 1)"
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release - ${{ steps.commit.outputs.message }}
+          draft: false
+          prerelease: false
+
+      - name: Get file list
+        id: get_file_list
+        run: |
+          echo "::set-output name=list::$(ls bin)"
+
+      - name: Upload release assets
+        run: |
+          files=${{ steps.get_file_list.outputs.list }}
+          IFS=' ' read -r -a array <<< "$files"
+          for element in "${array[@]}"
+          do
+            echo "Uploading $element"
+            curl \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: $(file -b --mime-type bin/$element)" \
+            --data-binary @bin/$element \
+            "${{ steps.create_release.outputs.upload_url }}?name=$element"
+          done

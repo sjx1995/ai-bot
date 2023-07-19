@@ -8,9 +8,14 @@ import { printAnswer, printQuestion } from "./print.js";
 import { requestOpenAI } from "./bot.js";
 import { startLoading, stopLoading, checkExit, loadEnv } from "./utils.js";
 
+let isCheck = false;
+
 async function main() {
   while (true) {
-    loadEnv();
+    if (!isCheck) {
+      loadEnv();
+      isCheck = true;
+    }
     printQuestion();
     const inputMessage = readline.question();
     checkExit(inputMessage);

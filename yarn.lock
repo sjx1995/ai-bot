@@ -175,6 +175,11 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
+"@sunly95/gen-version@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@sunly95/gen-version/-/gen-version-2.1.0.tgz#b29e7b5fa5518f84f3cecfe32a777f031767e01f"
+  integrity sha512-Z8hB8J3rsALJ7yzqIWNNIZZ6gSiUV5gofllFKh0ETHryl0q0NjnEBvGlJyfFYajCDblJa5YDyhIYb5v/vBsPZg==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.9.tgz#df4907fc07a886922637b15e02d4cebc4c0021b2"

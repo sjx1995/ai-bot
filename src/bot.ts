@@ -14,7 +14,6 @@ const createOenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env["OPENAI_KEY"],
     basePath: process.env["OPENAI_BASE_PATH"],
-    // basePath: "https://api.openai.com/v1",
   });
 
   openai = new OpenAIApi(configuration);

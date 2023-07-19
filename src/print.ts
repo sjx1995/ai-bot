@@ -23,27 +23,70 @@ const printQuestion = () => {
   );
 };
 
-const baseBoxenOptions: Options = {
-  float: "left",
-  borderStyle: "round",
-  padding: {
-    top: 0,
-    bottom: 0,
-    left: 1,
-    right: 1,
-  },
-};
-
-const printAnswer = (input: string) => {
+const baseBoxen = (
+  text: string,
+  title: string,
+  borderColor: string,
+  Options: Options = {}
+) => {
   console.log(
     boxen(
-      marked(input),
-      Object.assign({}, baseBoxenOptions, {
-        title: "💡 OpenAI",
-        borderColor: ANSWER_COLOR,
-      })
+      marked(text),
+      Object.assign(
+        {},
+        {
+          float: "left",
+          borderStyle: "round",
+          padding: {
+            top: 0,
+            bottom: 0,
+            left: 1,
+            right: 1,
+          },
+        },
+        { ...Options },
+        { title, borderColor }
+      )
     )
   );
 };
 
-export { printQuestion, printAnswer };
+const printAnswer = (input: string) => {
+  baseBoxen(input, "💡 OpenAI", ANSWER_COLOR);
+};
+
+const printWelcome = (model: string, basePath: string) => {
+  baseBoxen(
+    marked(
+      `🌐 请求地址: ${basePath}\n🤖 模型: ${model}\n\n📜 输入 bye 或 exit 或 quit 退出`
+    ),
+    "✨ 欢迎使用",
+    ANSWER_COLOR
+  );
+};
+
+const printSetPreset = () => {
+  baseBoxen(
+    marked(`配置文件 .preset 已生成，请填入打开文件根据注释填入对应的值`),
+    "✅ 生成配置文件",
+    ANSWER_COLOR
+  );
+};
+
+const printFailPreset = () => {
+  baseBoxen(
+    marked(
+      `配置文件不正确或缺少对应的值，请检查 .preset 文件或者删除以重新生成`
+    ),
+    "😥 读取配置文件失败",
+    ANSWER_COLOR
+  );
+};
+
+export {
+  printQuestion,
+  printAnswer,
+  printWelcome,
+  printSetPreset,
+  printFailPreset,
+};
