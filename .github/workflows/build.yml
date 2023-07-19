@@ -75,7 +75,7 @@ jobs:
           do
             echo "Uploading $element"
             curl \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.WORKFLOW_TOKEN }}" \
             -H "Content-Type: $(file -b --mime-type bin/$element)" \
             --data-binary @bin/$element \
             "${{ steps.create_release.outputs.upload_url }}?name=$element"
