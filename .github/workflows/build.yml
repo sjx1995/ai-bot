@@ -41,6 +41,9 @@ jobs:
           name: build-artifacts
           path: ./bin
 
+      - name: List files in ./bin
+        run: ls -l ./bin
+
       - name: Get latest commit message
         id: commit
         run: |
@@ -49,7 +52,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "18"
 
       - name: Create Release
         id: create_release
@@ -58,25 +61,50 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         with:
           tag_name: ${{ steps.commit.outputs.message }}
-          release_name: Release - ${{ steps.commit.outputs.message }}
+          release_name: Version - ${{ steps.commit.outputs.message }}
           draft: false
           prerelease: false
 
-      - name: Get file list
-        id: get_file_list
-        run: |
-          echo "::set-output name=list::$(ls bin)"
+      - name: Upload Release linux x64
+        id: upload-release-asset-linux-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/ai-bot-x86-linux-x64
+          asset_name: ai-bot-x86-linux-x64
+          asset_content_type: application/octet-stream
 
-      - name: Upload release assets
-        run: |
-          files=${{ steps.get_file_list.outputs.list }}
-          IFS=' ' read -r -a array <<< "$files"
-          for element in "${array[@]}"
-          do
-            echo "Uploading $element"
-            curl \
-            -H "Authorization: token ${{ secrets.WORKFLOW_TOKEN }}" \
-            -H "Content-Type: $(file -b --mime-type bin/$element)" \
-            --data-binary @bin/$element \
-            "${{ steps.create_release.outputs.upload_url }}?name=$element"
-          done
+      - name: Upload Release macos x64
+        id: upload-release-asset-macos-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/ai-bot-x86-macos-x64
+          asset_name: ai-bot-x86-macos-x64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release macos arm64
+        id: upload-release-asset-macos-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/ai-bot-x86-macos-arm64
+          asset_name: ai-bot-x86-macos-arm64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release win x64
+        id: upload-release-asset-win-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/ai-bot-x86-win-x64.exe
+          asset_name: ai-bot-x86-win-x64.exe
+          asset_content_type: application/octet-stream
