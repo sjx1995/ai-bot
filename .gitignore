@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .yarn/*
 .preset
+bin
 
 # Editor directories and files
 .vscode/*

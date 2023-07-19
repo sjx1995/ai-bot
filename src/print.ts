@@ -8,8 +8,6 @@ import chalk from "chalk";
 import { QUESTION_COLOR, ANSWER_COLOR } from "./constant.js";
 import { marked } from "marked";
 import markedTerminal from "marked-terminal";
-import { readFileSync } from "fs";
-import { resolve } from "path";
 
 marked.setOptions({
   renderer: new markedTerminal() as any,
@@ -18,8 +16,6 @@ marked.setOptions({
 });
 
 const printQuestion = () => {
-  const file = readFileSync(resolve(process.cwd(), "./demo.txt"), "utf-8");
-  console.log(marked(file));
   console.log(
     chalk.hex(QUESTION_COLOR)(
       `─ 🤔 请输入问题 ${`─`.repeat(Math.max(process.stdout.columns - 16, 0))}`

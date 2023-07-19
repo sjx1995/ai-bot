@@ -1,5 +1,5 @@
 {
-  "name": "bash-openai",
+  "name": "ai-bot",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
@@ -26,5 +26,11 @@
     "@types/readline-sync": "^1",
     "pkg": "^5.8.1",
     "ts-node": "^10.9.1"
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/**/*",
+      "dist/*.js"
+    ]
   }
 }

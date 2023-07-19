@@ -6,7 +6,7 @@
 import ora, { type Ora } from "ora";
 import dotEnv from "dotenv";
 import path from "path";
-import url from "url";
+import process from "process";
 import { printAnswer } from "./print.js";
 
 let spinner: Ora;
@@ -25,8 +25,7 @@ const checkExit = (input: string) => {
 };
 
 const loadEnv = () => {
-  const curPath = url.fileURLToPath(import.meta.url);
-  const preset = path.resolve(curPath, "../../.preset");
+  const preset = path.resolve(process.cwd(), ".preset");
   dotEnv.config({ path: preset });
 };
 
