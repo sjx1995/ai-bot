@@ -14,6 +14,7 @@ import {
   printSetPreset,
   printWelcome,
 } from "./print.js";
+import readline from "readline-sync";
 
 let spinner: Ora;
 const startLoading = (text: string) => {
@@ -31,15 +32,19 @@ const checkExit = (input: string) => {
 };
 
 const loadEnv = () => {
-  checkEnv();
-  const preset = path.resolve(process.cwd(), ".preset");
-  dotEnv.config({ path: preset });
-  const { OPENAI_KEY, OPENAI_BASE_PATH, OPENAI_MODEL } = process.env;
-  if (!OPENAI_KEY || !OPENAI_BASE_PATH || !OPENAI_MODEL) {
-    printFailPreset();
-    process.exit();
+  while (true) {
+    checkEnv();
+    const preset = path.resolve(process.cwd(), ".preset");
+    dotEnv.config({ path: preset, override: true });
+    const { OPENAI_KEY, OPENAI_BASE_PATH, OPENAI_MODEL } = process.env;
+    if (!OPENAI_KEY || !OPENAI_BASE_PATH || !OPENAI_MODEL) {
+      printFailPreset();
+      checkPressAnyKey();
+    } else {
+      printWelcome(OPENAI_MODEL, OPENAI_BASE_PATH);
+      break;
+    }
   }
-  printWelcome(OPENAI_MODEL, OPENAI_BASE_PATH);
 };
 
 const checkEnv = () => {
@@ -55,8 +60,13 @@ const checkEnv = () => {
       { encoding: "utf-8" }
     );
     printSetPreset();
-    process.exit();
+    checkPressAnyKey();
   }
+};
+
+const checkPressAnyKey = () => {
+  const input = readline.question();
+  checkExit(input);
 };
 
 export { startLoading, stopLoading, checkExit, loadEnv };

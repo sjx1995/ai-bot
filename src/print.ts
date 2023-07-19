@@ -67,7 +67,9 @@ const printWelcome = (model: string, basePath: string) => {
 
 const printSetPreset = () => {
   baseBoxen(
-    marked(`配置文件 .preset 已生成，请填入打开文件根据注释填入对应的值`),
+    marked(
+      `配置文件 .preset 已生成，请填入打开文件根据注释填入对应的值\n回车重新检查配置文件\n输入 bye 或 exit 或 quit 退出`
+    ),
     "✅ 生成配置文件",
     ANSWER_COLOR
   );
@@ -76,7 +78,7 @@ const printSetPreset = () => {
 const printFailPreset = () => {
   baseBoxen(
     marked(
-      `配置文件不正确或缺少对应的值，请检查 .preset 文件或者删除以重新生成`
+      `配置文件不正确或缺少对应的值，请检查 .preset 文件或者删除以重新生成\n回车重新检查配置文件\n输入 bye 或 exit 或 quit 退出`
     ),
     "😥 读取配置文件失败",
     ANSWER_COLOR
