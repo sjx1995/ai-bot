@@ -3,24 +3,45 @@
  * @Author: Sunly
  * @Date: 2023-07-18 06:21:29
  */
-import readline from "readline-sync";
 import { printAnswer, printQuestion } from "./print.js";
 import { requestOpenAI } from "./bot.js";
-import { startLoading, stopLoading, checkExit, loadEnv } from "./utils.js";
+import {
+  startLoading,
+  stopLoading,
+  checkExit,
+  loadEnv,
+  userInput,
+} from "./utils.js";
+import { setSystemChoice } from "./menu.js";
 
 let isCheck = false;
 
 async function main() {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
+    // 读取配置
     if (!isCheck) {
-      loadEnv();
+      await loadEnv();
       isCheck = true;
     }
+
+    // 第一次设置system
+    await setSystemChoice();
+
+    // 用户输入
     printQuestion();
-    const inputMessage = readline.question();
-    checkExit(inputMessage);
-    startLoading("Thinking...");
-    const answer = await requestOpenAI(inputMessage);
+    const question = (await userInput()).trim();
+
+    // 检查输入
+    checkExit(question);
+    // if (question === "/menu") {
+    //   await menuChoice();
+    //   continue;
+    // }
+
+    // 请求openai
+    startLoading();
+    const answer = await requestOpenAI(question);
     stopLoading();
     printAnswer(answer);
   }
