@@ -8,6 +8,7 @@ import chalk from "chalk";
 import { QUESTION_COLOR, ANSWER_COLOR } from "./constant.js";
 import { marked } from "marked";
 import markedTerminal from "marked-terminal";
+import pkg from "../package.json" assert { type: "json" };
 
 marked.setOptions({
   renderer: new markedTerminal() as never,
@@ -67,7 +68,7 @@ const printBye = () => {
 const printWelcome = (model: string, basePath: string) => {
   baseBoxen(
     marked(
-      `🌐 请求地址: ${basePath}\n🤖 模型: ${model}\n\n📜 输入 bye 或 exit 或 quit 退出`
+      `🌈 版本: ${pkg.version}\n🌐 请求地址: ${basePath}\n🤖 模型: ${model}\n\n📜 输入 bye 或 exit 或 quit 退出`
     ),
     "✨ 欢迎使用",
     ANSWER_COLOR
