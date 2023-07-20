@@ -72,8 +72,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/ai-bot-x86-linux-x64
-          asset_name: ai-bot-x86-linux-x64
+          asset_path: ./bin/ai-bot-x64-linux
+          asset_name: ai-bot-x64-linux
           asset_content_type: application/octet-stream
 
       - name: Upload Release macos x64
@@ -83,19 +83,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/ai-bot-x86-macos-x64
-          asset_name: ai-bot-x86-macos-x64
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release macos arm64
-        id: upload-release-asset-macos-arm64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/ai-bot-x86-macos-arm64
-          asset_name: ai-bot-x86-macos-arm64
+          asset_path: ./bin/ai-bot-x64-macos
+          asset_name: ai-bot-x64-macos
           asset_content_type: application/octet-stream
 
       - name: Upload Release win x64
@@ -105,6 +94,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/ai-bot-x86-win-x64.exe
-          asset_name: ai-bot-x86-win-x64.exe
+          asset_path: ./bin/ai-bot-x64-win.exe
+          asset_name: ai-bot-x64-win.exe
           asset_content_type: application/octet-stream

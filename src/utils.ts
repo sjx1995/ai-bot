@@ -1,53 +1,117 @@
 /*
- * @Description: loading动画
+ * @Description: 工具函数
  * @Author: Sunly
  * @Date: 2023-07-18 11:47:07
  */
-import ora, { type Ora } from "ora";
+import { input, select } from "@inquirer/prompts";
+import clipboardy from "clipboardy";
 import dotEnv from "dotenv";
-import path from "path";
 import fs from "fs";
+import ora, { type Ora } from "ora";
+import path from "path";
 import process from "process";
 import {
-  printAnswer,
+  printBye,
   printFailPreset,
   printSetPreset,
   printWelcome,
 } from "./print.js";
-import readline from "readline-sync";
 
+// 用户输入
+const userInput = async (message = "") => {
+  return await input({ message });
+};
+
+// 用户选择
+const userSelect = async <T>(
+  message: string,
+  choices: { name: string; value: T; description?: string }[]
+) => {
+  return await select<T>({
+    message,
+    choices,
+  });
+};
+
+// 动画
+const createAnimation = (): string[] => {
+  const sender = "💻";
+  const receiver = "🌏";
+  const animationArr: string[] = [];
+  const emoji = shuffleArr([
+    ["🦐", "🍤"],
+    ["🥚", "🍳"],
+    ["🐷", "🍖"],
+    ["💣", "💥"],
+    ["🔐", "🔓"],
+    ["❎", "✅"],
+    ["❓", "❗️"],
+    ["➡️", "⬅️"],
+    ["🌨️", "☂️"],
+  ]);
+  const animationLen = 24;
+  const emptyChar = "─";
+  emoji.forEach(([s, e]) => {
+    for (let i = 0; i < animationLen; i++) {
+      animationArr.push(
+        `${sender}${emptyChar.repeat(i)}${s}${emptyChar.repeat(
+          animationLen - i
+        )}${receiver}`
+      );
+    }
+    for (let i = 0; i < animationLen; i++) {
+      animationArr.push(
+        `${sender}${emptyChar.repeat(animationLen - i)}${e}${emptyChar.repeat(
+          i
+        )}${receiver}`
+      );
+    }
+  });
+  return animationArr;
+};
 let spinner: Ora;
-const startLoading = (text: string) => {
-  spinner = ora(`${text}\n`).start();
+let frames: string[];
+const startLoading = () => {
+  if (!frames) {
+    frames = createAnimation();
+  }
+  spinner = ora({
+    spinner: {
+      interval: 120,
+      frames,
+    },
+  }).start();
 };
 const stopLoading = () => {
   spinner.stop();
 };
 
+// 检查是否退出
 const checkExit = (input: string) => {
   if (input === "bye" || input === "exit" || input === "quit") {
-    printAnswer("ByeBye~ 👋");
+    printBye();
     process.exit();
   }
 };
 
-const loadEnv = () => {
+// 读取配置
+const loadEnv = async () => {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
-    checkEnv();
+    await checkEnv();
     const preset = path.resolve(process.cwd(), ".preset");
     dotEnv.config({ path: preset, override: true });
     const { OPENAI_KEY, OPENAI_BASE_PATH, OPENAI_MODEL } = process.env;
     if (!OPENAI_KEY || !OPENAI_BASE_PATH || !OPENAI_MODEL) {
       printFailPreset();
-      checkPressAnyKey();
+      await checkPressAnyKey();
     } else {
       printWelcome(OPENAI_MODEL, OPENAI_BASE_PATH);
       break;
     }
   }
 };
-
-const checkEnv = () => {
+const checkEnv = async () => {
   if (!fs.existsSync(path.resolve(process.cwd(), ".preset"))) {
     fs.writeFileSync(
       path.resolve(process.cwd(), ".preset"),
@@ -60,13 +124,40 @@ const checkEnv = () => {
       { encoding: "utf-8" }
     );
     printSetPreset();
-    checkPressAnyKey();
+    await checkPressAnyKey();
   }
 };
 
-const checkPressAnyKey = () => {
-  const input = readline.question();
+// 等待输入任意键
+const checkPressAnyKey = async () => {
+  const input = await userInput();
   checkExit(input);
 };
 
-export { startLoading, stopLoading, checkExit, loadEnv };
+// 复制到剪贴板
+const copyToClipboard = (text: string) => {
+  clipboardy.writeSync(text);
+};
+
+const shuffleArr = <T>(arr: T[]): T[] => {
+  let len = arr.length;
+  let t;
+  let i;
+  while (len) {
+    i = Math.floor(Math.random() * len--);
+    t = arr[len];
+    arr[len] = arr[i];
+    arr[i] = t;
+  }
+  return arr;
+};
+
+export {
+  checkExit,
+  copyToClipboard,
+  loadEnv,
+  startLoading,
+  stopLoading,
+  userInput,
+  userSelect,
+};

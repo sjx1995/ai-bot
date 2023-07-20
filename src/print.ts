@@ -10,7 +10,7 @@ import { marked } from "marked";
 import markedTerminal from "marked-terminal";
 
 marked.setOptions({
-  renderer: new markedTerminal() as any,
+  renderer: new markedTerminal() as never,
   mangle: false,
   headerIds: false,
 });
@@ -21,6 +21,15 @@ const printQuestion = () => {
       `─ 🤔 请输入问题 ${`─`.repeat(Math.max(process.stdout.columns - 16, 0))}`
     )
   );
+};
+
+const printAnswer = (input: string) => {
+  console.log(
+    chalk.hex(ANSWER_COLOR)(
+      `─ 💡 ChatGPT ${`─`.repeat(Math.max(process.stdout.columns - 13, 0))}`
+    )
+  );
+  console.log(marked(input));
 };
 
 const baseBoxen = (
@@ -51,8 +60,8 @@ const baseBoxen = (
   );
 };
 
-const printAnswer = (input: string) => {
-  baseBoxen(input, "💡 OpenAI", ANSWER_COLOR);
+const printBye = () => {
+  baseBoxen("ByeBye~ 👋", "💡 OpenAI", ANSWER_COLOR);
 };
 
 const printWelcome = (model: string, basePath: string) => {
@@ -85,10 +94,16 @@ const printFailPreset = () => {
   );
 };
 
+const printSuccessMessage = (message: string) => {
+  console.log(`✅ ${message}`);
+};
+
 export {
   printQuestion,
   printAnswer,
+  printBye,
   printWelcome,
   printSetPreset,
   printFailPreset,
+  printSuccessMessage,
 };

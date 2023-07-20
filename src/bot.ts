@@ -3,7 +3,11 @@
  * @Author: Sunly
  * @Date: 2023-07-18 11:26:00
  */
-import { Configuration, OpenAIApi } from "openai";
+import {
+  Configuration,
+  OpenAIApi,
+  type ChatCompletionRequestMessage,
+} from "openai";
 import { addAnswer, addQuestion, getMessages } from "./messages.js";
 
 let openai: OpenAIApi;
@@ -25,9 +29,9 @@ const requestOpenAI = async (message: string) => {
   createOenAI();
   const chatCompletion = await openai.createChatCompletion({
     model: process.env["OPEN_AI_MODEL"] as string,
-    messages: getMessages(),
+    messages: getMessages() as ChatCompletionRequestMessage[],
   });
-  const answer = chatCompletion.data.choices[0].message?.content!;
+  const answer = chatCompletion.data.choices[0].message?.content ?? "";
 
   addAnswer(answer);
 
