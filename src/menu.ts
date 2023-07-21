@@ -3,37 +3,37 @@
  * @Author: Sunly
  * @Date: 2023-07-20 08:19:58
  */
-import { getLastAnswer, addSystem } from "./messages.js";
-import { printBye, printSuccessMessage } from "./print.js";
-import { copyToClipboard, userInput, userSelect } from "./utils.js";
+import { addSystem } from "./messages.js";
+import { printBye, printSystemRole } from "./print.js";
+import { userInputMultiline, userSelect } from "./utils.js";
 
 // 菜单
 enum EnumMenuChoice {
-  COPY = "copy",
-  CLOSE = "close",
+  QUESTION = "question",
   EXIT = "exit",
 }
 
+let isFirstMenu = true;
 const menuChoice = async () => {
-  const menuSelect = await userSelect<EnumMenuChoice>("⚙️ 菜单", [
-    { name: "复制上一条回答", value: EnumMenuChoice["COPY"] },
-    { name: "关闭菜单", value: EnumMenuChoice["CLOSE"] },
-    { name: "退出程序", value: EnumMenuChoice["EXIT"] },
-  ]);
+  const menuSelect = await userSelect<EnumMenuChoice>(
+    // "⚙️ 菜单"
+    "",
+    [
+      {
+        name: isFirstMenu ? "开始提问" : "继续提问",
+        value: EnumMenuChoice["QUESTION"],
+      },
+      { name: "退出程序", value: EnumMenuChoice["EXIT"] },
+    ]
+  );
+  isFirstMenu = false;
 
-  if (menuSelect === EnumMenuChoice["COPY"]) {
-    const lastAnswer = getLastAnswer();
-    if (lastAnswer) {
-      console.log(lastAnswer);
-      copyToClipboard(lastAnswer);
-      printSuccessMessage("已复制到剪贴板");
-    }
-  } else if (menuSelect === EnumMenuChoice["CLOSE"]) {
-    return;
-  } else if (menuSelect === EnumMenuChoice["EXIT"]) {
+  if (menuSelect === EnumMenuChoice["EXIT"]) {
     printBye();
     process.exit();
   }
+
+  return menuSelect;
 };
 
 // 第一次提示用户是否要设置system
@@ -44,8 +44,8 @@ enum enumSystemChoice {
 }
 
 let isSetSystem = false;
-const setSystemChoice = async () => {
-  if (isSetSystem) return;
+const setSystemChoice = async (): Promise<false | enumSystemChoice> => {
+  if (isSetSystem) return false;
 
   const systemSelect = await userSelect(
     "👨‍💻 你可以在提问前设置ai角色，是否设置？如果你不需要设置，点击否可以直接开始对话。",
@@ -60,14 +60,16 @@ const setSystemChoice = async () => {
   );
 
   if (systemSelect === enumSystemChoice["YES"]) {
-    const systemInfo = await userInput("请输入你想设置的system内容：");
+    const systemInfo = await userInputMultiline("请输入你想设置的system内容：");
     addSystem(systemInfo, false);
+    printSystemRole(systemInfo);
   } else if (systemSelect === enumSystemChoice["NO"]) {
     addSystem("", false);
   } else if (systemSelect === enumSystemChoice["AUTO"]) {
     addSystem("", true);
   }
   isSetSystem = true;
+  return systemSelect;
 };
 
-export { menuChoice, setSystemChoice };
+export { menuChoice, EnumMenuChoice, setSystemChoice, enumSystemChoice };

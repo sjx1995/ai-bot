@@ -3,6 +3,7 @@
  * @Author: Sunly
  * @Date: 2023-07-18 11:47:07
  */
+import editor from "@inquirer/editor";
 import { input, select } from "@inquirer/prompts";
 import clipboardy from "clipboardy";
 import dotEnv from "dotenv";
@@ -20,6 +21,14 @@ import {
 // 用户输入
 const userInput = async (message = "") => {
   return await input({ message });
+};
+
+// 用户多行输入
+const userInputMultiline = async (message = "", waitForUseInput = false) => {
+  return await editor({
+    message,
+    waitForUseInput,
+  });
 };
 
 // 用户选择
@@ -104,7 +113,7 @@ const loadEnv = async () => {
     const { OPENAI_KEY, OPENAI_BASE_PATH, OPENAI_MODEL } = process.env;
     if (!OPENAI_KEY || !OPENAI_BASE_PATH || !OPENAI_MODEL) {
       printFailPreset();
-      await checkPressAnyKey();
+      await userInput();
     } else {
       printWelcome(OPENAI_MODEL, OPENAI_BASE_PATH);
       break;
@@ -124,14 +133,8 @@ const checkEnv = async () => {
       { encoding: "utf-8" }
     );
     printSetPreset();
-    await checkPressAnyKey();
+    await userInput();
   }
-};
-
-// 等待输入任意键
-const checkPressAnyKey = async () => {
-  const input = await userInput();
-  checkExit(input);
 };
 
 // 复制到剪贴板
@@ -159,5 +162,6 @@ export {
   startLoading,
   stopLoading,
   userInput,
+  userInputMultiline,
   userSelect,
 };

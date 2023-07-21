@@ -1,6 +1,6 @@
 {
   "name": "ai-bot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "build:version": "node ./gen-version.js"
   },
   "dependencies": {
+    "@inquirer/editor": "^1.2.4",
     "@inquirer/prompts": "^3.0.0",
     "boxen": "^7.1.1",
     "chalk": "^5.3.0",
