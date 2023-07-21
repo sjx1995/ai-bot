@@ -16,12 +16,13 @@ marked.setOptions({
   headerIds: false,
 });
 
-const printQuestion = () => {
+const printQuestion = (input: string) => {
   console.log(
     chalk.hex(QUESTION_COLOR)(
-      `─ 🤔 请输入问题 ${`─`.repeat(Math.max(process.stdout.columns - 16, 0))}`
+      `─ 🤔 我 ${`─`.repeat(Math.max(process.stdout.columns - 8, 0))}`
     )
   );
+  console.log(marked(input));
 };
 
 const printAnswer = (input: string) => {
@@ -61,6 +62,10 @@ const baseBoxen = (
   );
 };
 
+const printSystemRole = (message: string) => {
+  baseBoxen(marked(message), "😏 角色信息", ANSWER_COLOR);
+};
+
 const printBye = () => {
   baseBoxen("ByeBye~ 👋", "💡 OpenAI", ANSWER_COLOR);
 };
@@ -68,7 +73,7 @@ const printBye = () => {
 const printWelcome = (model: string, basePath: string) => {
   baseBoxen(
     marked(
-      `🌈 版本: ${pkg.version}\n🌐 请求地址: ${basePath}\n🤖 模型: ${model}\n\n📜 输入 bye 或 exit 或 quit 退出`
+      `🌈 版本: ${pkg.version}\n🌐 请求地址: ${basePath}\n🤖 模型: ${model}`
     ),
     "✨ 欢迎使用",
     ANSWER_COLOR
@@ -78,7 +83,7 @@ const printWelcome = (model: string, basePath: string) => {
 const printSetPreset = () => {
   baseBoxen(
     marked(
-      `配置文件 .preset 已生成，请填入打开文件根据注释填入对应的值\n回车重新检查配置文件\n输入 bye 或 exit 或 quit 退出`
+      `配置文件 .preset 已生成，请填入打开文件根据注释填入对应的值\n回车重新检查配置文件`
     ),
     "✅ 生成配置文件",
     ANSWER_COLOR
@@ -88,7 +93,7 @@ const printSetPreset = () => {
 const printFailPreset = () => {
   baseBoxen(
     marked(
-      `配置文件不正确或缺少对应的值，请检查 .preset 文件或者删除以重新生成\n回车重新检查配置文件\n输入 bye 或 exit 或 quit 退出`
+      `配置文件不正确或缺少对应的值，请检查 .preset 文件或者删除以重新生成\n回车重新检查配置文件`
     ),
     "😥 读取配置文件失败",
     ANSWER_COLOR
@@ -107,4 +112,5 @@ export {
   printSetPreset,
   printFailPreset,
   printSuccessMessage,
+  printSystemRole,
 };

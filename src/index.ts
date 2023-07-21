@@ -8,11 +8,10 @@ import { requestOpenAI } from "./bot.js";
 import {
   startLoading,
   stopLoading,
-  checkExit,
   loadEnv,
-  userInput,
+  userInputMultiline,
 } from "./utils.js";
-import { setSystemChoice } from "./menu.js";
+import { menuChoice, setSystemChoice, enumSystemChoice } from "./menu.js";
 
 let isCheck = false;
 
@@ -26,18 +25,15 @@ async function main() {
     }
 
     // 第一次设置system
-    await setSystemChoice();
-
+    const systemChoice = await setSystemChoice();
+    if (systemChoice === enumSystemChoice["YES"] || systemChoice === false) {
+      // 目前只有一种输出 QUESTION
+      // todo 未来可以增加多种输出
+      await menuChoice();
+    }
     // 用户输入
-    printQuestion();
-    const question = (await userInput()).trim();
-
-    // 检查输入
-    checkExit(question);
-    // if (question === "/menu") {
-    //   await menuChoice();
-    //   continue;
-    // }
+    const question = await userInputMultiline();
+    printQuestion(question);
 
     // 请求openai
     startLoading();
