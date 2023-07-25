@@ -10,7 +10,8 @@ import { marked } from "marked";
 import markedTerminal from "marked-terminal";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore 开启resolveJsonModule后打包会报错
-import pkg from "../package.json";
+import pkg from "../package.json" assert { type: "json" };
+import { checkEnv, getEnv } from "./env.js";
 
 marked.setOptions({
   renderer: new markedTerminal() as never,
@@ -69,18 +70,20 @@ const printSystemRole = (message: string) => {
 };
 
 const printBye = () => {
-  baseBoxen("ByeBye~ 👋", "💡 OpenAI", ANSWER_COLOR);
+  baseBoxen("ByeBye~ 👋", "💡 ChatGPT", ANSWER_COLOR);
 };
 
-const printWelcome = (model: string, basePath: string) => {
-  baseBoxen(
-    marked(
-      // `🌐 请求地址: ${basePath}\n🤖 模型: ${model}`
-      `🌈 版本: ${pkg.version}\n🌐 请求地址: ${basePath}\n🤖 模型: ${model}`
-    ),
-    "✨ 欢迎使用",
-    ANSWER_COLOR
-  );
+const printWelcome = () => {
+  const isReady = checkEnv();
+  let message: string;
+  if (isReady) {
+    const { OPENAI_BASE_PATH, OPENAI_KEY, OPENAI_MODEL } = getEnv();
+    const key = "*".repeat(24) + OPENAI_KEY.slice(-8);
+    message = `🌈 版本: ${pkg.version}\n🌐 请求地址: ${OPENAI_BASE_PATH}\n🤖 模型: ${OPENAI_MODEL}\n🔑 KEY: ${key}`;
+  } else {
+    message = `⚠ 在开始对话前，请先完场设置`;
+  }
+  baseBoxen(marked(message), "✨ 欢迎使用", ANSWER_COLOR);
 };
 
 const printSetPreset = () => {

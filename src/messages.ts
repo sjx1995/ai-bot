@@ -3,35 +3,35 @@
  * @Author: Sunly
  * @Date: 2023-07-18 15:42:10
  */
-enum Role {
+enum EnumRole {
   SYSTEM = "system",
   SAME_USER = "same_user",
   ASSISTANT = "assistant",
   USER = "user",
 }
 
-const messages: { role: Role; content: string }[] = [];
+const messages: { role: EnumRole; content: string }[] = [];
 
-const addMessage = (role: Role, content: string) => {
+const addMessage = (role: EnumRole, content: string) => {
   messages.push({ role, content });
 };
 
 const addQuestion = (msg: string) => {
   if (messages.length === 1) {
-    if (messages[0].role === Role.SAME_USER) {
-      messages[0].role = Role.SYSTEM;
+    if (messages[0].role === EnumRole.SAME_USER) {
+      messages[0].role = EnumRole.SYSTEM;
       messages[0].content = msg;
     }
   }
-  addMessage(Role.USER, msg);
+  addMessage(EnumRole.USER, msg);
 };
 
 const addAnswer = (msg: string) => {
-  addMessage(Role.ASSISTANT, msg);
+  addMessage(EnumRole.ASSISTANT, msg);
 };
 
 const addSystem = (msg: string, isSameUser: boolean) => {
-  addMessage(isSameUser ? Role.SAME_USER : Role.SYSTEM, msg);
+  addMessage(isSameUser ? EnumRole.SAME_USER : EnumRole.SYSTEM, msg);
 };
 
 const getMessages = () => {
@@ -39,10 +39,17 @@ const getMessages = () => {
 };
 
 const getLastAnswer = () => {
-  const lastAnswer = messages.filter((msg) => msg.role === Role.ASSISTANT);
+  const lastAnswer = messages.filter((msg) => msg.role === EnumRole.ASSISTANT);
   return lastAnswer.length > 0
     ? lastAnswer[lastAnswer.length - 1].content
     : null;
 };
 
-export { addQuestion, addAnswer, addSystem, getMessages, getLastAnswer };
+export {
+  EnumRole,
+  addQuestion,
+  addAnswer,
+  addSystem,
+  getMessages,
+  getLastAnswer,
+};

@@ -4,23 +4,25 @@
  * @Date: 2023-07-18 11:47:07
  */
 import editor from "@inquirer/editor";
-import { input, select } from "@inquirer/prompts";
+import password from "@inquirer/password";
+import { input, select, Separator } from "@inquirer/prompts";
 import clipboardy from "clipboardy";
-import dotEnv from "dotenv";
+import dayjs from "dayjs";
 import fs from "fs";
 import ora, { type Ora } from "ora";
 import path from "path";
 import process from "process";
-import {
-  printBye,
-  printFailPreset,
-  printSetPreset,
-  printWelcome,
-} from "./print.js";
+import { EnumRole, getMessages } from "./messages.js";
+import { printAnswer, printBye } from "./print.js";
 
 // 用户输入
 const userInput = async (message = "") => {
   return await input({ message });
+};
+
+// 用户输入密码
+const userInputPassword = async (message = "") => {
+  return await password({ message, mask: true });
 };
 
 // 用户多行输入
@@ -34,7 +36,10 @@ const userInputMultiline = async (message = "", waitForUseInput = false) => {
 // 用户选择
 const userSelect = async <T>(
   message: string,
-  choices: { name: string; value: T; description?: string }[]
+  choices: (
+    | { name: string; value: T; description?: string; disabled?: string }
+    | Separator
+  )[]
 ) => {
   return await select<T>({
     message,
@@ -103,45 +108,12 @@ const checkExit = (input: string) => {
   }
 };
 
-// 读取配置
-const loadEnv = async () => {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    await checkEnv();
-    const preset = path.resolve(process.cwd(), ".preset");
-    dotEnv.config({ path: preset, override: true });
-    const { OPENAI_KEY, OPENAI_BASE_PATH, OPENAI_MODEL } = process.env;
-    if (!OPENAI_KEY || !OPENAI_BASE_PATH || !OPENAI_MODEL) {
-      printFailPreset();
-      await userInput();
-    } else {
-      printWelcome(OPENAI_MODEL, OPENAI_BASE_PATH);
-      break;
-    }
-  }
-};
-const checkEnv = async () => {
-  if (!fs.existsSync(path.resolve(process.cwd(), ".preset"))) {
-    fs.writeFileSync(
-      path.resolve(process.cwd(), ".preset"),
-      "# 在等号后面填入你的openai key\n" +
-        "OPENAI_KEY=\n\n" +
-        "# 如果是第三方key，需要修改对应的请求地址\n" +
-        "OPENAI_BASE_PATH=https://api.openai.com/v1\n\n" +
-        "# 模型允许值：gpt-4, gpt-4-0613, gpt-4-32k, gpt-4-32k-0613, gpt-3.5-turbo, gpt-3.5-turbo-0613, gpt-3.5-turbo-16k, gpt-3.5-turbo-16k-0613\n" +
-        "OPENAI_MODEL=gpt-3.5-turbo\n",
-      { encoding: "utf-8" }
-    );
-    printSetPreset();
-    await userInput();
-  }
-};
-
 // 复制到剪贴板
 const copyToClipboard = (text: string) => {
   clipboardy.writeSync(text);
 };
 
+// 随机数组
 const shuffleArr = <T>(arr: T[]): T[] => {
   let len = arr.length;
   let t;
@@ -155,13 +127,37 @@ const shuffleArr = <T>(arr: T[]): T[] => {
   return arr;
 };
 
+// 生成对话到文件
+const generateChatToFile = () => {
+  const messages = getMessages();
+  const getRole = (role: EnumRole) => {
+    return role === EnumRole.SYSTEM
+      ? "角色信息"
+      : role === EnumRole.USER
+      ? "我"
+      : "ChatGPT";
+  };
+  const chat = messages.reduce((pre, { content, role }) => {
+    return (pre += `#### ${getRole(role)}:\n${content}\n`);
+  }, "");
+  const chatFilePath = path.resolve(
+    process.cwd(),
+    `chat-${dayjs().format("YYYY-MM-DD-HH-mm-ss")}.md`
+  );
+  fs.writeFileSync(chatFilePath, chat, {
+    encoding: "utf-8",
+  });
+  printAnswer(`对话已保存到 ${chatFilePath}`);
+};
+
 export {
   checkExit,
   copyToClipboard,
-  loadEnv,
+  generateChatToFile,
   startLoading,
   stopLoading,
   userInput,
   userInputMultiline,
+  userInputPassword,
   userSelect,
 };

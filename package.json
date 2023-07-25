@@ -1,6 +1,6 @@
 {
   "name": "ai-bot",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "@inquirer/editor": "^1.2.4",
+    "@inquirer/password": "^1.1.5",
     "@inquirer/prompts": "^3.0.0",
     "boxen": "^7.1.1",
     "chalk": "^5.3.0",
     "clipboardy": "^3.0.0",
+    "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "figlet": "^1.6.0",
     "marked": "^5.1.1",
