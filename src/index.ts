@@ -3,13 +3,11 @@
  * @Author: Sunly
  * @Date: 2023-07-18 06:21:29
  */
-import { printAnswer, printQuestion, printWelcome } from "./print.js";
-import { requestOpenAI } from "./bot.js";
-import { startLoading, stopLoading, userInputMultiline } from "./utils.js";
-import { menuChoice, setSystemChoice, EnumSystemChoice } from "./menu.js";
+import { chat } from "./bot.js";
+import { EnumSystemChoice, menuChoice, setSystemChoice } from "./menu.js";
+import { printQuestion, printWelcome } from "./print.js";
 import { reduceMenuChoice } from "./reduce.js";
-
-// let isCheck = false;
+import { userInputMultiline } from "./utils.js";
 
 async function main() {
   printWelcome();
@@ -21,30 +19,18 @@ async function main() {
       continue;
     }
 
-    // if (!isCheck) {
-    //   await loadEnv();
-    //   isCheck = true;
-    // }
-
     // 第一次设置system
     const systemChoiceRes = await setSystemChoice();
-    if (
-      systemChoiceRes === EnumSystemChoice["YES"] ||
-      systemChoiceRes === false
-    ) {
-      // 目前只有一种输出 QUESTION
-      // todo 未来可以增加多种输出
-      await menuChoice();
+    if (systemChoiceRes === EnumSystemChoice["YES"]) {
+      continue;
     }
+
     // 用户输入
     const question = await userInputMultiline();
     printQuestion(question);
 
+    await chat(question);
     // 请求openai
-    startLoading();
-    const answer = await requestOpenAI(question);
-    stopLoading();
-    printAnswer(answer);
   }
 }
 

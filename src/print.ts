@@ -5,7 +5,7 @@
  */
 import boxen, { type Options } from "boxen";
 import chalk from "chalk";
-import { QUESTION_COLOR, ANSWER_COLOR } from "./constant.js";
+import { QUESTION_COLOR, ANSWER_COLOR, ERROR_COLOR } from "./constant.js";
 import { marked } from "marked";
 import markedTerminal from "marked-terminal";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -73,15 +73,20 @@ const printBye = () => {
   baseBoxen("ByeBye~ 👋", "💡 ChatGPT", ANSWER_COLOR);
 };
 
+const printError = (message: string) => {
+  baseBoxen(message, "😢 出错啦", ERROR_COLOR);
+};
+
 const printWelcome = () => {
   const isReady = checkEnv();
-  let message: string;
+  let message: string = `🌈 版本: ${pkg.version}\n\n`;
   if (isReady) {
     const { OPENAI_BASE_PATH, OPENAI_KEY, OPENAI_MODEL } = getEnv();
     const key = "*".repeat(24) + OPENAI_KEY.slice(-8);
-    message = `🌈 版本: ${pkg.version}\n🌐 请求地址: ${OPENAI_BASE_PATH}\n🤖 模型: ${OPENAI_MODEL}\n🔑 KEY: ${key}`;
+    const basePath = OPENAI_BASE_PATH ? OPENAI_BASE_PATH : "官方地址";
+    message += `🌐 请求地址: ${basePath}\n🤖 模型: ${OPENAI_MODEL}\n🔑 KEY: ${key}`;
   } else {
-    message = `⚠ 在开始对话前，请先完场设置`;
+    message += `⁉️ 在开始对话前，请先完成设置`;
   }
   baseBoxen(marked(message), "✨ 欢迎使用", ANSWER_COLOR);
 };
@@ -115,6 +120,7 @@ export {
   printAnswer,
   printBye,
   printWelcome,
+  printError,
   printSetPreset,
   printFailPreset,
   printSuccessMessage,

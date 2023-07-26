@@ -14,6 +14,7 @@ import path from "path";
 import process from "process";
 import { EnumRole, getMessages } from "./messages.js";
 import { printAnswer, printBye } from "./print.js";
+import { stringify } from "flatted";
 
 // 用户输入
 const userInput = async (message = "") => {
@@ -22,7 +23,7 @@ const userInput = async (message = "") => {
 
 // 用户输入密码
 const userInputPassword = async (message = "") => {
-  return await password({ message, mask: true });
+  return await password({ message, mask: "*" });
 };
 
 // 用户多行输入
@@ -138,7 +139,7 @@ const generateChatToFile = () => {
       : "ChatGPT";
   };
   const chat = messages.reduce((pre, { content, role }) => {
-    return (pre += `#### ${getRole(role)}:\n${content}\n`);
+    return (pre += `#### ${getRole(role)}:\n\n${content}\n\n`);
   }, "");
   const chatFilePath = path.resolve(
     process.cwd(),
@@ -148,6 +149,19 @@ const generateChatToFile = () => {
     encoding: "utf-8",
   });
   printAnswer(`对话已保存到 ${chatFilePath}`);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const outputErrorFile = (error: any) => {
+  const { response, request } = error;
+  const ERROR_FILE_PATH = path.resolve(
+    process.cwd(),
+    `error-${dayjs().format("YYYY-MM-DD-HH-mm-ss")}.json`
+  );
+  fs.writeFileSync(ERROR_FILE_PATH, stringify({ response, request }), {
+    encoding: "utf-8",
+  });
+  return ERROR_FILE_PATH;
 };
 
 export {
@@ -160,4 +174,5 @@ export {
   userInputMultiline,
   userInputPassword,
   userSelect,
+  outputErrorFile,
 };

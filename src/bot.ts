@@ -7,35 +7,64 @@ import {
   Configuration,
   OpenAIApi,
   type ChatCompletionRequestMessage,
+  type ConfigurationParameters,
 } from "openai";
+import { EnumEnvKey } from "./env.js";
+import { errorChoice } from "./menu.js";
 import { addAnswer, addQuestion, getMessages } from "./messages.js";
+import { printAnswer, printError } from "./print.js";
+import { reduceErrorChoice } from "./reduce.js";
+import { outputErrorFile, startLoading, stopLoading } from "./utils.js";
 
 let openai: OpenAIApi;
 
 const createOenAI = () => {
   if (openai) return;
 
-  const configuration = new Configuration({
-    apiKey: process.env["OPENAI_KEY"],
-    basePath: process.env["OPENAI_BASE_PATH"],
-  });
+  const config: ConfigurationParameters = {
+    apiKey: process.env[EnumEnvKey.KEY],
+  };
+  if (process.env[EnumEnvKey.BASE_PATH]) {
+    config.basePath = process.env[EnumEnvKey.BASE_PATH];
+  }
+  const configuration = new Configuration(config);
 
   openai = new OpenAIApi(configuration);
 };
 
-const requestOpenAI = async (message: string) => {
+const requestOpenAI = async (message: string): Promise<[boolean, string]> => {
   addQuestion(message);
-
   createOenAI();
-  const chatCompletion = await openai.createChatCompletion({
-    model: process.env["OPEN_AI_MODEL"] as string,
-    messages: getMessages() as ChatCompletionRequestMessage[],
-  });
-  const answer = chatCompletion.data.choices[0].message?.content ?? "";
-
-  addAnswer(answer);
-
-  return answer;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  try {
+    const chatCompletion = await openai.createChatCompletion({
+      model: process.env[EnumEnvKey.MODEL]!,
+      messages: getMessages() as ChatCompletionRequestMessage[],
+    });
+    const answer = chatCompletion.data.choices[0].message?.content ?? "";
+    addAnswer(answer);
+    return [true, answer];
+  } catch (error) {
+    const ERR_FILE_PATH = outputErrorFile(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = (error as any).response;
+    let errMsg = response?.data.message ?? response?.data ?? "未知错误";
+    errMsg = typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg);
+    return [false, `${errMsg}\n\n错误日志保存到: ${ERR_FILE_PATH}`];
+  }
 };
 
-export { requestOpenAI };
+const chat = async (question: string) => {
+  startLoading();
+  const [isReqSuc, answer] = await requestOpenAI(question);
+  stopLoading();
+
+  if (isReqSuc) {
+    return printAnswer(answer);
+  }
+
+  printError(answer);
+  await reduceErrorChoice(await errorChoice(), question);
+};
+
+export { chat };

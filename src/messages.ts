@@ -23,7 +23,9 @@ const addQuestion = (msg: string) => {
       messages[0].content = msg;
     }
   }
-  addMessage(EnumRole.USER, msg);
+  if (messages[messages.length - 1].role !== EnumRole.USER) {
+    addMessage(EnumRole.USER, msg);
+  }
 };
 
 const addAnswer = (msg: string) => {

@@ -131,6 +131,21 @@ const setSystemChoice = async (): Promise<false | EnumSystemChoice> => {
   return systemSelect;
 };
 
+// 错误处理
+enum EnumErrorChoice {
+  "CHANGE_QUESTION" = "change_question",
+  "RESEND_REQUEST" = "resend_request",
+  "EXIT" = "exit",
+}
+const errorChoice = async (): Promise<EnumErrorChoice> => {
+  const errorSelect = await userSelect("请求发生错误，是否重新发送请求", [
+    { name: "重新发送请求", value: EnumErrorChoice["RESEND_REQUEST"] },
+    { name: "修改问题并重新发送", value: EnumErrorChoice["CHANGE_QUESTION"] },
+    { name: "退出程序", value: EnumErrorChoice["EXIT"] },
+  ]);
+  return errorSelect;
+};
+
 export {
   EnumMenuChoice,
   EnumSystemChoice,
@@ -139,4 +154,6 @@ export {
   modelChoice,
   EnumModelName,
   setBasePath,
+  EnumErrorChoice,
+  errorChoice,
 };
