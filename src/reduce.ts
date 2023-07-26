@@ -3,10 +3,20 @@
  * @Author: Sunly
  * @Date: 2023-07-25 08:18:49
  */
+import { chat } from "./bot.js";
 import { EnumEnvKey, setEnv } from "./env.js";
-import { EnumMenuChoice, modelChoice, setBasePath } from "./menu.js";
-import { printBye } from "./print.js";
-import { generateChatToFile, userInputPassword } from "./utils.js";
+import {
+  EnumErrorChoice,
+  EnumMenuChoice,
+  modelChoice,
+  setBasePath,
+} from "./menu.js";
+import { printBye, printQuestion } from "./print.js";
+import {
+  generateChatToFile,
+  userInputPassword,
+  userInputMultiline,
+} from "./utils.js";
 
 const reduceMenuChoice = async (
   userSelect: EnumMenuChoice
@@ -34,4 +44,22 @@ const reduceMenuChoice = async (
   return false;
 };
 
-export { reduceMenuChoice };
+const reduceErrorChoice = async (
+  userSelect: EnumErrorChoice,
+  question: string
+) => {
+  if (userSelect === EnumErrorChoice["EXIT"]) {
+    printBye();
+    process.exit();
+  }
+
+  if (userSelect === EnumErrorChoice["CHANGE_QUESTION"]) {
+    const question = await userInputMultiline();
+    printQuestion(question);
+    await chat(question);
+  } else if (userSelect === EnumErrorChoice["RESEND_REQUEST"]) {
+    await chat(question);
+  }
+};
+
+export { reduceMenuChoice, reduceErrorChoice };

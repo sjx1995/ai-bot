@@ -1,6 +1,6 @@
 {
   "name": "ai-bot",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "figlet": "^1.6.0",
+    "flatted": "^3.2.7",
     "marked": "^5.1.1",
     "marked-terminal": "^5.2.0",
     "openai": "^3.3.0",
